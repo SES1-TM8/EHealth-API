@@ -1,4 +1,4 @@
-package xyz.jonmclean.EHealth;
+package xyz.jonmclean.EHealth.test;
 
 import org.springframework.data.repository.CrudRepository;
 

@@ -1,4 +1,4 @@
-package xyz.jonmclean.EHealth;
+package xyz.jonmclean.EHealth.test;
 
 
 public class PongResponse {

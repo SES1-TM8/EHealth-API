@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import xyz.jonmclean.EHealth.models.UserResponse;
 import xyz.jonmclean.EHealth.models.exceptions.UserAlreadyExistsException;
 import xyz.jonmclean.EHealth.models.exceptions.UserNotFoundException;
 
+@Controller
 public class UserService {
 	
 	@Autowired
@@ -43,7 +45,7 @@ public class UserService {
 		return response;
 	}
 	
-	@GetMapping("user/{email}")
+	@GetMapping("user/email/{email}")
 	@ResponseBody
 	public UserResponse get(@PathVariable String email) throws UserNotFoundException {
 		Optional<User> optional = userRepo.findByEmailAddress(email);

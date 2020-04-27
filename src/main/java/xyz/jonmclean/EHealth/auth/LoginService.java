@@ -17,7 +17,8 @@ import xyz.jonmclean.EHealth.models.SessionResponse;
 import xyz.jonmclean.EHealth.models.User;
 import xyz.jonmclean.EHealth.models.exceptions.UserNotFoundException;
 import xyz.jonmclean.EHealth.models.exceptions.UserPasswordWrongException;
-import xyz.jonmclean.EHealth.user.UserRepository;
+import xyz.jonmclean.EHealth.repositories.SessionRepository;
+import xyz.jonmclean.EHealth.repositories.UserRepository;
 
 @Controller
 public class LoginService {

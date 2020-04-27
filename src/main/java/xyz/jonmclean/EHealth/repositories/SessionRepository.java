@@ -1,4 +1,4 @@
-package xyz.jonmclean.EHealth.auth;
+package xyz.jonmclean.EHealth.repositories;
 
 import java.util.Optional;
 

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import xyz.jonmclean.EHealth.models.Doctor;
 import xyz.jonmclean.EHealth.models.User;
-import xyz.jonmclean.EHealth.models.exceptions.DoctorAlreadyExistsException;
+import xyz.jonmclean.EHealth.models.exceptions.DoctorInfoAlreadyExistsException;
 import xyz.jonmclean.EHealth.models.exceptions.DoctorInfoNotFoundException;
 import xyz.jonmclean.EHealth.models.exceptions.UserNotFoundException;
 import xyz.jonmclean.EHealth.repositories.DoctorRepository;
@@ -29,7 +29,7 @@ public class DoctorInformationService {
 	
 	@PostMapping("/user/doctor/add")
 	@ResponseBody
-	public Doctor addDoctorInformationForUser(@RequestParam("registration") String registrationNumber, @RequestParam("userId") long userId) throws UserNotFoundException, DoctorInfoNotFoundException, DoctorAlreadyExistsException {
+	public Doctor addDoctorInformationForUser(@RequestParam("registration") String registrationNumber, @RequestParam("userId") long userId) throws UserNotFoundException, DoctorInfoNotFoundException, DoctorInfoAlreadyExistsException {
 		Optional<User> optionalUser = userRepo.findById(userId);
 		
 		if(!optionalUser.isPresent()) {
@@ -41,7 +41,7 @@ public class DoctorInformationService {
 		Optional<Doctor> optionalDoctor = doctorRepo.findByUserId(userId);
 		
 		if(optionalDoctor.isPresent()) {
-			throw new DoctorAlreadyExistsException();
+			throw new DoctorInfoAlreadyExistsException();
 		}
 		
 		

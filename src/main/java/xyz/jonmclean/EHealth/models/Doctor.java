@@ -16,7 +16,7 @@ public class Doctor {
 	@Column(unique = true)
 	public String registraitonNumber;
 	
-	@Column
+	@Column(nullable = false)
 	public long userId;
 	
 	public Doctor() {}

@@ -1,9 +1,9 @@
-package xyz.jonmclean.EHealth.models.exceptions;
+package xyz.jonmclean.EHealth.models.exceptions.patient;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-public class DoctorAlreadyExistsException extends Exception {
+public class PatientInfoAlreadyExistsException extends Exception {
 
 }

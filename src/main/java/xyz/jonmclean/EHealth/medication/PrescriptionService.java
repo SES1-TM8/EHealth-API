@@ -1,5 +1,6 @@
 package xyz.jonmclean.EHealth.medication;
 
+import java.sql.Timestamp;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import xyz.jonmclean.EHealth.models.Prescription;
 import xyz.jonmclean.EHealth.models.Session;
 import xyz.jonmclean.EHealth.models.exceptions.MedicationNotFoundException;
 import xyz.jonmclean.EHealth.models.exceptions.NotDoctorException;
+import xyz.jonmclean.EHealth.models.exceptions.SessionExpiredException;
 import xyz.jonmclean.EHealth.models.exceptions.SessionNotFoundException;
 import xyz.jonmclean.EHealth.models.exceptions.patient.PatientNotFoundException;
 import xyz.jonmclean.EHealth.repositories.DoctorRepository;
@@ -43,7 +45,7 @@ public class PrescriptionService {
 	
 	@PostMapping("/prescription/add")
 	@ResponseBody
-	public Prescription create(@RequestParam("patientId") long patientId, @RequestParam("medicationId") long medicationId, @RequestParam("frequency") double frequency, @RequestParam("frequencyUnit") String unit, @RequestParam("notes") String notes, @RequestParam("sessionToken") String token) throws SessionNotFoundException, NotDoctorException, PatientNotFoundException, MedicationNotFoundException {
+	public Prescription create(@RequestParam("patientId") long patientId, @RequestParam("medicationId") long medicationId, @RequestParam("frequency") double frequency, @RequestParam("frequencyUnit") String unit, @RequestParam("notes") String notes, @RequestParam("sessionToken") String token) throws SessionNotFoundException, NotDoctorException, PatientNotFoundException, MedicationNotFoundException, SessionExpiredException {
 		Optional<Session> optionalSession = sessionRepo.findByToken(token);
 		
 		if(!optionalSession.isPresent()) {
@@ -51,6 +53,10 @@ public class PrescriptionService {
 		}
 		
 		Session session = optionalSession.get();
+		
+		if(session.expiry.after(new Timestamp(System.currentTimeMillis()))) {
+			throw new SessionExpiredException();
+		}
 		
 		Optional<Doctor> optionalDoctor = doctorRepo.findByUserId(session.getUserId());
 		

@@ -1,6 +1,7 @@
 package xyz.jonmclean.EHealth;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,9 @@ public class EHealthApplication {
 	
 	public final String awsAccessPropName = "awsAccessKeyProperty";
 	public final String awsSecretPropName = "awsSecretKeyProperty";
+	
+	@Value("${base.url}")
+	public static String baseUrl;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(EHealthApplication.class, args);

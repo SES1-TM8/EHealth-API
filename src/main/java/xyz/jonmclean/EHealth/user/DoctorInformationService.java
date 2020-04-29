@@ -44,8 +44,8 @@ public class DoctorInformationService {
 			throw new DoctorInfoAlreadyExistsException();
 		}
 		
-		
 		Doctor doctor = new Doctor(registrationNumber, user.getUserId());
+		doctor.setVerified(true); // Pretend verification (would actually talk to an API and use that response)
 		
 		doctorRepo.save(doctor);
 		

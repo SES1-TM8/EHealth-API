@@ -19,11 +19,15 @@ public class Doctor {
 	@Column(nullable = false)
 	public long userId;
 	
+	@Column
+	public boolean verified = false;
+	
 	public Doctor() {}
 	
 	public Doctor(String registrationNumber, long userId) {
 		this.registraitonNumber = registrationNumber;
 		this.userId = userId;
+		this.verified = false;
 	}
 
 	public long getDoctorId() {
@@ -49,6 +53,12 @@ public class Doctor {
 	public void setUserId(long userId) {
 		this.userId = userId;
 	}
-	
-	
+
+	public boolean isVerified() {
+		return verified;
+	}
+
+	public void setVerified(boolean verified) {
+		this.verified = verified;
+	}
 }

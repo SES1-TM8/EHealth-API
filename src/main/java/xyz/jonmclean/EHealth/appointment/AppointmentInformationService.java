@@ -1,5 +1,6 @@
 package xyz.jonmclean.EHealth.appointment;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +17,7 @@ import xyz.jonmclean.EHealth.models.AppointmentInformation;
 import xyz.jonmclean.EHealth.models.Session;
 import xyz.jonmclean.EHealth.models.exceptions.AppointmentInformationNotFoundException;
 import xyz.jonmclean.EHealth.models.exceptions.AppointmentNotFoundException;
+import xyz.jonmclean.EHealth.models.exceptions.SessionExpiredException;
 import xyz.jonmclean.EHealth.models.exceptions.SessionNotFoundException;
 import xyz.jonmclean.EHealth.repositories.AppointmentInformationRepository;
 import xyz.jonmclean.EHealth.repositories.AppointmentRepository;
@@ -35,11 +37,17 @@ public class AppointmentInformationService {
 	
 	@PostMapping("/appointment/info/add")
 	@ResponseBody
-	public AppointmentInformation add(@RequestParam("sessionToken") String token, @RequestParam("appointmentId") long appointmentId, @RequestParam("description") String description, @RequestParam("image") List<Long> images) throws SessionNotFoundException, AppointmentNotFoundException {
+	public AppointmentInformation add(@RequestParam("sessionToken") String token, @RequestParam("appointmentId") long appointmentId, @RequestParam("description") String description, @RequestParam("image") List<Long> images) throws SessionNotFoundException, AppointmentNotFoundException, SessionExpiredException {
 		Optional<Session> optionalSession = sessionRepo.findByToken(token);
 		
 		if(!optionalSession.isPresent()) {
 			throw new SessionNotFoundException();
+		}
+		
+		Session session = optionalSession.get();
+		
+		if(session.getExpiry().after(new Timestamp(System.currentTimeMillis()))) {
+			throw new SessionExpiredException();
 		}
 		
 		Optional<Appointment> optionalAppointment = appointmentRepo.findById(appointmentId);
@@ -62,12 +70,18 @@ public class AppointmentInformationService {
 	
 	@GetMapping("/appointment/info/get/{sessionToken}/{id}")
 	@ResponseBody
-	public AppointmentInformation get(@PathVariable("sessionToken") String sessionToken, @PathVariable("id") long appointmentId) throws SessionNotFoundException, AppointmentInformationNotFoundException {
+	public AppointmentInformation get(@PathVariable("sessionToken") String sessionToken, @PathVariable("id") long appointmentId) throws SessionNotFoundException, AppointmentInformationNotFoundException, SessionExpiredException {
 		
 		Optional<Session> optionalSession = sessionRepo.findByToken(sessionToken);
 		
 		if(!optionalSession.isPresent()) {
 			throw new SessionNotFoundException();
+		}
+		
+		Session session = optionalSession.get();
+		
+		if(session.getExpiry().after(new Timestamp(System.currentTimeMillis()))) {
+			throw new SessionExpiredException();
 		}
 		
 		Optional<AppointmentInformation> optionalInformation = infoRepo.findByAppointmentId(appointmentId);

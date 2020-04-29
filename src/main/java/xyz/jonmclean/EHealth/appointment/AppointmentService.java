@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import xyz.jonmclean.EHealth.models.Appointment;
+import xyz.jonmclean.EHealth.models.AppointmentInformation;
 import xyz.jonmclean.EHealth.models.Doctor;
+import xyz.jonmclean.EHealth.models.GenericResponse;
 import xyz.jonmclean.EHealth.models.Patient;
 import xyz.jonmclean.EHealth.models.Session;
 import xyz.jonmclean.EHealth.models.exceptions.AppointmentNotFoundException;
@@ -23,6 +26,7 @@ import xyz.jonmclean.EHealth.models.exceptions.NotDoctorException;
 import xyz.jonmclean.EHealth.models.exceptions.SessionExpiredException;
 import xyz.jonmclean.EHealth.models.exceptions.SessionNotFoundException;
 import xyz.jonmclean.EHealth.models.exceptions.patient.PatientNotFoundException;
+import xyz.jonmclean.EHealth.repositories.AppointmentInformationRepository;
 import xyz.jonmclean.EHealth.repositories.AppointmentRepository;
 import xyz.jonmclean.EHealth.repositories.DoctorRepository;
 import xyz.jonmclean.EHealth.repositories.PatientRepository;
@@ -33,6 +37,9 @@ public class AppointmentService {
 	
 	@Autowired
 	AppointmentRepository appointmentRepo;
+	
+	@Autowired
+	AppointmentInformationRepository infoRepo;
 	
 	@Autowired
 	SessionRepository sessionRepo;
@@ -189,6 +196,43 @@ public class AppointmentService {
 		}
 		
 		return optionalAppointment.get();
+	}
+	
+	@DeleteMapping("/appointment/cancel/{sessionToken}/{id}")
+	@ResponseBody
+	public GenericResponse deleteAppointment(@PathVariable("sessionToken") String token, @PathVariable("id") long appointmentId) 
+			throws SessionNotFoundException, SessionExpiredException, AppointmentNotFoundException {
+		Optional<Session> optionalSession = sessionRepo.findByToken(token);
+		
+		if(!optionalSession.isPresent()) {
+			throw new SessionNotFoundException();
+		}
+		
+		Session session = optionalSession.get();
+		
+		if(session.getExpiry().after(new Timestamp(System.currentTimeMillis()))) {
+			throw new SessionExpiredException();
+		}
+		
+		Optional<Appointment> optionalAppointment = appointmentRepo.findById(appointmentId);
+		
+		if(!optionalAppointment.isPresent()) {
+			throw new AppointmentNotFoundException();
+		}
+		
+		Appointment appointment = optionalAppointment.get();
+		
+		Optional<AppointmentInformation> optionalInfo = infoRepo.findByAppointmentId(appointment.getAppointmentId());
+		
+		if(optionalInfo.isPresent()) {
+			AppointmentInformation information = optionalInfo.get();
+			
+			infoRepo.delete(information);
+		}
+		
+		appointmentRepo.delete(appointment);
+		
+		return new GenericResponse(true, "");
 	}
 	
 }

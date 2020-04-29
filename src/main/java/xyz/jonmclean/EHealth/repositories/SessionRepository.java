@@ -8,4 +8,7 @@ import xyz.jonmclean.EHealth.models.Session;
 import xyz.jonmclean.EHealth.models.User;
 
 public interface SessionRepository extends CrudRepository<Session, Long> {
+	
+	public Optional<Session> findByToken(String token);
+	
 }

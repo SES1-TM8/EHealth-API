@@ -7,14 +7,21 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 
 import xyz.jonmclean.EHealth.helper.HashHelper;
 import xyz.jonmclean.EHealth.models.Session;
 import xyz.jonmclean.EHealth.models.SessionResponse;
 import xyz.jonmclean.EHealth.models.User;
+import xyz.jonmclean.EHealth.models.exceptions.SessionExpiredException;
+import xyz.jonmclean.EHealth.models.exceptions.SessionNotFoundException;
 import xyz.jonmclean.EHealth.models.exceptions.UserNotFoundException;
 import xyz.jonmclean.EHealth.models.exceptions.UserPasswordWrongException;
 import xyz.jonmclean.EHealth.repositories.SessionRepository;
@@ -67,6 +74,24 @@ public class LoginService {
 		response.setUserId(user.getUserId());
 		
 		return response;
+	}
+	
+	@GetMapping("/user/auth/firebase/{session}")
+	@ResponseBody
+	public String getFirebaseToken(@PathVariable("session") String token) throws SessionNotFoundException, SessionExpiredException, FirebaseAuthException {
+		Optional<Session> optionalSession = sessionRepo.findByToken(token);
+		
+		if(!optionalSession.isPresent()) {
+			throw new SessionNotFoundException();
+		}
+		
+		Session session = optionalSession.get();
+		
+		if(session.getExpiry().before(new Timestamp(System.currentTimeMillis()))) {
+			throw new SessionExpiredException();
+		}
+		
+		return FirebaseAuth.getInstance().createCustomToken("" + session.getUserId());
 	}
 	
 }

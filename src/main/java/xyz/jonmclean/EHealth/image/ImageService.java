@@ -30,6 +30,7 @@ import xyz.jonmclean.EHealth.image.models.S3UploadRequest;
 import xyz.jonmclean.EHealth.image.repositories.ImageRepository;
 import xyz.jonmclean.EHealth.image.repositories.ImageVariantRepository;
 import xyz.jonmclean.EHealth.image.repositories.S3UploadRequestRepository;
+import xyz.jonmclean.EHealth.models.InternalImageCallback;
 
 @Component
 public class ImageService {
@@ -48,7 +49,7 @@ public class ImageService {
 		this.s3 = s3;
 	}
 	
-	public S3Upload getUpload(String service, String mimeType, Long ownerId, String callbackPath) { // TODO: Verify MIME type is an image
+	public S3Upload getUpload(String service, String mimeType, Long ownerId, String callbackPath, long appointmentInfoId) { // TODO: Verify MIME type is an image
 		long expire = System.currentTimeMillis() + (1000 * 60 * 30);
 		String key = System.currentTimeMillis() + UUID.randomUUID().toString() + "." + mimeType.split("/")[1];
 		
@@ -65,16 +66,17 @@ public class ImageService {
 		uploadRequest.setExpire(new Date(expire));
 		uploadRequest.setService(service);
 		uploadRequest.setMimeType(mimeType);
+		uploadRequest.setAppointmentInfoId(appointmentInfoId);
 		
 		uploadRepo.save(uploadRequest);
 		
 		return new S3Upload(url.toString(), EHealthApplication.baseUrl + "/" + callbackPath + "/?id=" + key);
 	}
 	
-	public Image process(String key) throws IOException {
+	public InternalImageCallback process(String key) throws IOException {
 		Optional<S3UploadRequest> optionalUploadRequest = uploadRepo.findById(key);
 		
-		if(!optionalUploadRequest.isPresent()) return null;
+		if(!optionalUploadRequest.isPresent()) return null; // TODO: Throw error
 		
 		S3UploadRequest request = optionalUploadRequest.get();
 		
@@ -97,7 +99,7 @@ public class ImageService {
 		
 		imageRepo.save(newImage);
 		
-		return getImage(newImage.getImageId());
+		return new InternalImageCallback(request.appointmentInfoId, newImage.getImageId());
 	}
 	
 	public BufferedImage getObject(String bucket, String key) throws IOException {

@@ -1,5 +1,6 @@
 package xyz.jonmclean.EHealth.appointment;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import xyz.jonmclean.EHealth.image.ImageService;
+import xyz.jonmclean.EHealth.image.models.Image;
 import xyz.jonmclean.EHealth.image.models.S3Upload;
 import xyz.jonmclean.EHealth.models.Appointment;
 import xyz.jonmclean.EHealth.models.AppointmentInfoResponse;
 import xyz.jonmclean.EHealth.models.AppointmentInformation;
+import xyz.jonmclean.EHealth.models.InternalImageCallback;
 import xyz.jonmclean.EHealth.models.Session;
 import xyz.jonmclean.EHealth.models.exceptions.AppointmentInformationNotFoundException;
 import xyz.jonmclean.EHealth.models.exceptions.AppointmentNotFoundException;
@@ -79,7 +82,7 @@ public class AppointmentInformationService {
 		List<S3Upload> uploads = new ArrayList<S3Upload>();
 		
 		for(String mime : mimeTypes) {
-			S3Upload upload = imageService.getUpload("appointment_upload", mime, appointment.getPatientId(), "appointment/info/add/callback");
+			S3Upload upload = imageService.getUpload("appointment_upload", mime, appointment.getPatientId(), "appointment/info/add/callback", information.getAppointmentId());
 			uploads.add(upload);
 		}
 		
@@ -114,5 +117,24 @@ public class AppointmentInformationService {
 		return optionalInformation.get();
 	}
 	
+	
+	@GetMapping("/appointment/info/add/callback")
+	@ResponseBody
+	public Image callback(@RequestParam("id") String id) throws AppointmentInformationNotFoundException, IOException {
+		InternalImageCallback internal = imageService.process(id);
+		Optional<AppointmentInformation> optionalInfo = infoRepo.findById(internal.appointmentInfoId);
+		
+		if(!optionalInfo.isPresent()) {
+			throw new AppointmentInformationNotFoundException();
+		}
+		
+		AppointmentInformation info = optionalInfo.get();
+		
+		info.getImageIds().add(internal.getImageId());
+		
+		infoRepo.save(info);
+		
+		return imageService.getImage(internal.getImageId());
+	}
 	
 }

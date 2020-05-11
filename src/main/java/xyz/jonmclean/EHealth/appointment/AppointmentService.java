@@ -62,7 +62,7 @@ public class AppointmentService {
 		
 		Session session = optionalSession.get();
 		
-		if(session.getExpiry().after(new Timestamp(System.currentTimeMillis()))) {
+		if(session.getExpiry().before(new Timestamp(System.currentTimeMillis()))) {
 			throw new SessionExpiredException();
 		}
 		
@@ -104,7 +104,7 @@ public class AppointmentService {
 		
 		Session session = optionalSession.get();
 		
-		if(session.getExpiry().after(new Timestamp(System.currentTimeMillis()))) {
+		if(session.getExpiry().before(new Timestamp(System.currentTimeMillis()))) {
 			throw new SessionExpiredException();
 		}
 		

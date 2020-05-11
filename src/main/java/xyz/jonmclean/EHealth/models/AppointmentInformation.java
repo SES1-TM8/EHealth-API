@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,7 +20,7 @@ public class AppointmentInformation {
 	@Column(nullable = false)
 	public String description;
 	
-	@Column(nullable = true)
+	@ElementCollection
 	public List<Long> imageIds = new ArrayList<Long>();
 	
 	@Column(nullable = false, unique = true)

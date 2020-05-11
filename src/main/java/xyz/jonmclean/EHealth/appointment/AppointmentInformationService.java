@@ -1,6 +1,7 @@
 package xyz.jonmclean.EHealth.appointment;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import xyz.jonmclean.EHealth.image.ImageService;
+import xyz.jonmclean.EHealth.image.models.S3Upload;
 import xyz.jonmclean.EHealth.models.Appointment;
+import xyz.jonmclean.EHealth.models.AppointmentInfoResponse;
 import xyz.jonmclean.EHealth.models.AppointmentInformation;
 import xyz.jonmclean.EHealth.models.Session;
 import xyz.jonmclean.EHealth.models.exceptions.AppointmentInformationNotFoundException;
@@ -35,9 +39,12 @@ public class AppointmentInformationService {
 	@Autowired
 	public SessionRepository sessionRepo;
 	
+	@Autowired
+	public ImageService imageService;
+	
 	@PostMapping("/appointment/info/add")
 	@ResponseBody
-	public AppointmentInformation add(@RequestParam("sessionToken") String token, @RequestParam("appointmentId") long appointmentId, @RequestParam("description") String description, @RequestParam("image") List<Long> images) throws SessionNotFoundException, AppointmentNotFoundException, SessionExpiredException {
+	public AppointmentInfoResponse add(@RequestParam("sessionToken") String token, @RequestParam("appointmentId") long appointmentId, @RequestParam("description") String description, @RequestParam("image") List<String> mimeTypes) throws SessionNotFoundException, AppointmentNotFoundException, SessionExpiredException {
 		Optional<Session> optionalSession = sessionRepo.findByToken(token);
 		
 		if(!optionalSession.isPresent()) {
@@ -46,7 +53,7 @@ public class AppointmentInformationService {
 		
 		Session session = optionalSession.get();
 		
-		if(session.getExpiry().after(new Timestamp(System.currentTimeMillis()))) {
+		if(session.getExpiry().before(new Timestamp(System.currentTimeMillis()))) {
 			throw new SessionExpiredException();
 		}
 		
@@ -61,11 +68,25 @@ public class AppointmentInformationService {
 		AppointmentInformation information = new AppointmentInformation();
 		information.setAppointmentId(appointment.getAppointmentId());
 		information.setDescription(description);
-		information.setImageIds(images);
 		
 		infoRepo.save(information);
 		
-		return information;
+		AppointmentInfoResponse response = new AppointmentInfoResponse();
+		response.setAppointment(appointment);
+		response.setAppointmentInfoId(information.getId());
+		response.setDescription(description);
+		
+		List<S3Upload> uploads = new ArrayList<S3Upload>();
+		
+		for(String mime : mimeTypes) {
+			S3Upload upload = imageService.getUpload("appointment_upload", mime, appointment.getPatientId(), "appointment/info/add/callback");
+			uploads.add(upload);
+		}
+		
+		response.setUploads(uploads);
+		
+		
+		return response;
 	}
 	
 	@GetMapping("/appointment/info/get/{sessionToken}/{id}")
@@ -92,4 +113,6 @@ public class AppointmentInformationService {
 		
 		return optionalInformation.get();
 	}
+	
+	
 }

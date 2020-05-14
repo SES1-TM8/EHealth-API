@@ -22,6 +22,15 @@ public class UserResponse {
 		this.emailAddress = emailAddress;
 		this.phoneNumber = phoneNumber;
 	}
+	
+	public UserResponse(User user) {
+		this.userId = user.getUserId();
+		this.firstName = user.getFirstName();
+		this.lastName = user.getLastName();
+		this.dob = user.getDob();
+		this.emailAddress = user.getEmailAddress();
+		this.phoneNumber = user.getPhoneNumber();
+	}
 
 	public long getUserId() {
 		return userId;

@@ -52,7 +52,7 @@ public class DoctorInformationService {
 		return get(user.getUserId());
 	}
 	
-	@GetMapping("/user/doctor/{id}")
+	@GetMapping("/user/doctor/{userId}")
 	@ResponseBody
 	public Doctor get(@PathVariable long userId) throws DoctorInfoNotFoundException {
 		Optional<Doctor> optionalDoctor = doctorRepo.findByUserId(userId);

@@ -1,4 +1,4 @@
-package xyz.jonmclean.EHealth.location;
+package xyz.jonmclean.EHealth.availability;
 
 import java.awt.geom.Path2D;
 import java.sql.Timestamp;

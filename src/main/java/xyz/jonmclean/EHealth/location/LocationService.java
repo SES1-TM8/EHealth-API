@@ -1,4 +1,4 @@
-package xyz.jonmclean.EHealth;
+package xyz.jonmclean.EHealth.location;
 
 import java.awt.geom.Path2D;
 import java.sql.Timestamp;
@@ -143,7 +143,7 @@ public class LocationService {
 		boundaryRepo.deleteById(boundaryId);
 	}
 	
-	@PostMapping("/boundary/check/")
+	@PostMapping("/boundary/check")
 	@ResponseBody
 	public BoundCheckResponse check(@RequestParam String token, @RequestParam double latitude, @RequestParam double longitude) throws ResourceNotFoundException, SessionNotFoundException, SessionExpiredException, NotDoctorException {
 		Optional<Session> optionalSession = sessionRepo.findByToken(token);

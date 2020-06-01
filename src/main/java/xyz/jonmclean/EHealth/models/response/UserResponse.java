@@ -1,6 +1,8 @@
-package xyz.jonmclean.EHealth.models;
+package xyz.jonmclean.EHealth.models.response;
 
 import java.sql.Date;
+
+import xyz.jonmclean.EHealth.models.User;
 
 public class UserResponse {
 	

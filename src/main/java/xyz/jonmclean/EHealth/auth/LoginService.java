@@ -18,12 +18,12 @@ import com.google.firebase.auth.FirebaseAuthException;
 
 import xyz.jonmclean.EHealth.helper.HashHelper;
 import xyz.jonmclean.EHealth.models.Session;
-import xyz.jonmclean.EHealth.models.SessionResponse;
 import xyz.jonmclean.EHealth.models.User;
 import xyz.jonmclean.EHealth.models.exceptions.SessionExpiredException;
 import xyz.jonmclean.EHealth.models.exceptions.SessionNotFoundException;
 import xyz.jonmclean.EHealth.models.exceptions.UserNotFoundException;
 import xyz.jonmclean.EHealth.models.exceptions.UserPasswordWrongException;
+import xyz.jonmclean.EHealth.models.response.SessionResponse;
 import xyz.jonmclean.EHealth.repositories.SessionRepository;
 import xyz.jonmclean.EHealth.repositories.UserRepository;
 

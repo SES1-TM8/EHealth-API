@@ -18,7 +18,6 @@ import xyz.jonmclean.EHealth.image.ImageService;
 import xyz.jonmclean.EHealth.image.models.Image;
 import xyz.jonmclean.EHealth.image.models.S3Upload;
 import xyz.jonmclean.EHealth.models.Appointment;
-import xyz.jonmclean.EHealth.models.AppointmentInfoResponse;
 import xyz.jonmclean.EHealth.models.AppointmentInformation;
 import xyz.jonmclean.EHealth.models.InternalImageCallback;
 import xyz.jonmclean.EHealth.models.Session;
@@ -26,6 +25,7 @@ import xyz.jonmclean.EHealth.models.exceptions.AppointmentInformationNotFoundExc
 import xyz.jonmclean.EHealth.models.exceptions.AppointmentNotFoundException;
 import xyz.jonmclean.EHealth.models.exceptions.SessionExpiredException;
 import xyz.jonmclean.EHealth.models.exceptions.SessionNotFoundException;
+import xyz.jonmclean.EHealth.models.response.AppointmentInfoResponse;
 import xyz.jonmclean.EHealth.repositories.AppointmentInformationRepository;
 import xyz.jonmclean.EHealth.repositories.AppointmentRepository;
 import xyz.jonmclean.EHealth.repositories.SessionRepository;

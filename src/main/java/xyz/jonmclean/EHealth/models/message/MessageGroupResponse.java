@@ -4,7 +4,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-import xyz.jonmclean.EHealth.models.UserResponse;
+import xyz.jonmclean.EHealth.models.response.UserResponse;
 
 public class MessageGroupResponse {
 	

@@ -1,8 +1,9 @@
-package xyz.jonmclean.EHealth.models;
+package xyz.jonmclean.EHealth.models.response;
 
 import java.util.List;
 
 import xyz.jonmclean.EHealth.image.models.S3Upload;
+import xyz.jonmclean.EHealth.models.Appointment;
 
 public class AppointmentInfoResponse {
 	

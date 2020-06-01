@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import xyz.jonmclean.EHealth.helper.HashHelper;
 import xyz.jonmclean.EHealth.models.User;
-import xyz.jonmclean.EHealth.models.UserResponse;
 import xyz.jonmclean.EHealth.models.exceptions.UserAlreadyExistsException;
 import xyz.jonmclean.EHealth.models.exceptions.UserNotFoundException;
+import xyz.jonmclean.EHealth.models.response.UserResponse;
 import xyz.jonmclean.EHealth.repositories.UserRepository;
 
 @Controller

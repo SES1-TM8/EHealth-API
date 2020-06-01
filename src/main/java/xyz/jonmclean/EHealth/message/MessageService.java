@@ -55,7 +55,7 @@ public class MessageService {
 		firestore.collection("message-group").document(""+messageGroupId).collection("message").document(""+message.getMessageId()).create(objMap.convertValue(message, Map.class)).get();
 		
 		return message;
-	}
+	} 
 
 	
 }

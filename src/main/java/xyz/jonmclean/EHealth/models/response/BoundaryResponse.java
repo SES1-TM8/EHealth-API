@@ -1,6 +1,8 @@
-package xyz.jonmclean.EHealth.models;
+package xyz.jonmclean.EHealth.models.response;
 
 import java.util.List;
+
+import xyz.jonmclean.EHealth.models.Doctor;
 
 public class BoundaryResponse {
 	

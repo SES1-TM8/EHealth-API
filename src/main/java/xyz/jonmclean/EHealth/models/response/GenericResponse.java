@@ -1,4 +1,4 @@
-package xyz.jonmclean.EHealth.models;
+package xyz.jonmclean.EHealth.models.response;
 
 public class GenericResponse {
 	

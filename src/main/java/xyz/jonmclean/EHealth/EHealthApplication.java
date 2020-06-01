@@ -35,7 +35,6 @@ public class EHealthApplication {
 	
 	public final String googleSecretPropName = "googleApiSecretProperty";
 	
-	@Value("${base.url}")
 	public static String baseUrl;
 	
 	public static void main(String[] args) {
@@ -67,5 +66,10 @@ public class EHealthApplication {
 				.setProjectId("ehealth-458e4")
 				.build()
 				.getService();
+	}
+	
+	@Value("${ehealth.url}")
+	public void setBaseUrl(String url) {
+		EHealthApplication.baseUrl = url;
 	}
 }

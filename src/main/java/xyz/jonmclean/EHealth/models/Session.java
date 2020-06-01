@@ -25,12 +25,22 @@ public class Session {
 	@Column
 	public long userId;
 	
+	@Column(nullable = true)
+	public String fcmToken;
+	
 	public Session() {}
 	
 	public Session(String token, Timestamp expiry, Long userId) {
 		this.token = token;
 		this.expiry = expiry;
 		this.userId = userId;
+	}
+	
+	public Session(String token, Timestamp expiry, Long userId, String fcmToken) {
+		this.token = token;
+		this.expiry = expiry;
+		this.userId = userId;
+		this.fcmToken = fcmToken;
 	}
 
 	public long getSessionId() {
@@ -64,4 +74,14 @@ public class Session {
 	public void setUserId(long userId) {
 		this.userId = userId;
 	}
+
+	public String getFcmToken() {
+		return fcmToken;
+	}
+
+	public void setFcmToken(String fcmToken) {
+		this.fcmToken = fcmToken;
+	}
+	
+	
 }

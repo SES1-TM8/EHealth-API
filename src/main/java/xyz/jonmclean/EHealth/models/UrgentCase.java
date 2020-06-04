@@ -18,7 +18,7 @@ public class UrgentCase {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	long id;
 	
-	@Column
+	@Column(length = 2048)
 	String description;
 	
 	@ElementCollection

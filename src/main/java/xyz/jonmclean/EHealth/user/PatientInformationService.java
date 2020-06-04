@@ -96,10 +96,22 @@ public class PatientInformationService {
 		return patient;
 	}
 	
-	@GetMapping("/user/patient/{id}")
+	@GetMapping("/user/patient/{userId}")
 	@ResponseBody
 	public Patient get(@PathVariable long userId) throws PatientNotFoundException {
 		Optional<Patient> optionalPatient = patientRepo.findByUserId(userId);
+		
+		if(!optionalPatient.isPresent()) {
+			throw new PatientNotFoundException();
+		}
+		
+		return optionalPatient.get();
+	}
+	
+	@GetMapping("/user/patient/id/{patientId}")
+	@ResponseBody
+	public Patient getFromId(@PathVariable long patientId) throws PatientNotFoundException {
+		Optional<Patient> optionalPatient = patientRepo.findById(patientId);
 		
 		if(!optionalPatient.isPresent()) {
 			throw new PatientNotFoundException();

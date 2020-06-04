@@ -1,6 +1,6 @@
 package xyz.jonmclean.EHealth.models;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,11 +22,11 @@ public class Appointment {
 	public long doctorId;
 	
 	@Column
-	public Date start;
+	public long start;
 	
 	public Appointment() {}
 
-	public Appointment(long patientId, long doctorId, Date start) {
+	public Appointment(long patientId, long doctorId, long start) {
 		this.patientId = patientId;
 		this.doctorId = doctorId;
 		this.start = start;
@@ -56,11 +56,11 @@ public class Appointment {
 		this.doctorId = doctorId;
 	}
 
-	public Date getStart() {
+	public long getStart() {
 		return start;
 	}
 
-	public void setStart(Date start) {
+	public void setStart(long start) {
 		this.start = start;
 	}
 }

@@ -10,6 +10,7 @@ import xyz.jonmclean.EHealth.models.UrgentCase;
 public interface UrgentCaseRepository extends CrudRepository<UrgentCase, Long>{
 	
 	public Optional<UrgentCase> findByPatientId(long patientId);
+	public List<UrgentCase> findAllByPatientId(long patientId);
 	
 	public List<UrgentCase> findByResolved(boolean resolved);
 	

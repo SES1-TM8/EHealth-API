@@ -20,13 +20,17 @@ public class MessageGroup {
 	boolean direct;
 	Date timestamp = new Date(System.currentTimeMillis());
 	
+	@Column
+	public long appointmentId;
+	
 	public MessageGroup() {}
 
-	public MessageGroup(long messageGroupId, String name, boolean direct, Date timestamp) {
+	public MessageGroup(long messageGroupId, String name, boolean direct, Date timestamp, long appointmentId) {
 		this.messageGroupId = messageGroupId;
 		this.name = name;
 		this.direct = direct;
 		this.timestamp = timestamp;
+		this.appointmentId = appointmentId;
 	}
 	
 	public MessageGroup(String name, boolean direct) {
@@ -64,5 +68,13 @@ public class MessageGroup {
 
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	public long getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(long appointmentId) {
+		this.appointmentId = appointmentId;
 	}
 }

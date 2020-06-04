@@ -38,7 +38,7 @@ public class LoginService {
 	
 	@PostMapping("/user/login")
 	@ResponseBody
-	public SessionResponse login(@RequestParam("email") String emailAddress, @RequestParam("password") String password) throws UserNotFoundException, UserPasswordWrongException {
+	public SessionResponse login(@RequestParam("email") String emailAddress, @RequestParam("password") String password) throws UserNotFoundException, UserPasswordWrongException, FirebaseAuthException {
 		Optional<User> optionalUser = userRepo.findByEmailAddress(emailAddress);
 		
 		if(!optionalUser.isPresent()) {
@@ -61,6 +61,9 @@ public class LoginService {
 		rand.nextBytes(tokenBytes);
 		String token = enc.encodeToString(tokenBytes);
 		
+		token = token.replaceAll("/", "");
+		
+		
 		long expiry = System.currentTimeMillis() + (604800 * 1000);
 		
 		Session session = new Session(token, new Timestamp(expiry), user.getUserId());
@@ -72,6 +75,7 @@ public class LoginService {
 		response.setToken(session.getToken());
 		response.setExpiry(expiry);
 		response.setUserId(user.getUserId());
+		response.setFirebaseToken(FirebaseAuth.getInstance().createCustomToken(user.getUserId() + ""));
 		
 		return response;
 	}

@@ -104,7 +104,7 @@ public class AppointmentInformationService {
 		
 		Session session = optionalSession.get();
 		
-		if(session.getExpiry().after(new Timestamp(System.currentTimeMillis()))) {
+		if(session.getExpiry().before(new Timestamp(System.currentTimeMillis()))) {
 			throw new SessionExpiredException();
 		}
 		
@@ -121,6 +121,7 @@ public class AppointmentInformationService {
 	@GetMapping("/appointment/info/add/callback")
 	@ResponseBody
 	public Image callback(@RequestParam("id") String id) throws AppointmentInformationNotFoundException, IOException {
+		System.out.println(id);
 		InternalImageCallback internal = imageService.process(id);
 		Optional<AppointmentInformation> optionalInfo = infoRepo.findById(internal.appointmentInfoId);
 		

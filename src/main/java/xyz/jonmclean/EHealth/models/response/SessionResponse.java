@@ -8,14 +8,16 @@ public class SessionResponse {
 	public String token;
 	public long expiry;
 	public long userId;
+	public String firebaseToken;
 	
 	public SessionResponse() {}
 	
-	public SessionResponse(long sessionId, String token, long expiry, long userId) {
+	public SessionResponse(long sessionId, String token, long expiry, long userId, String firebaseToken) {
 		this.sessionId = sessionId;
 		this.token = token;
 		this.expiry = expiry;
 		this.userId = userId;
+		this.firebaseToken = firebaseToken;
 	}
 
 	public long getSessionId() {
@@ -48,5 +50,13 @@ public class SessionResponse {
 
 	public void setUserId(long userId) {
 		this.userId = userId;
+	}
+
+	public String getFirebaseToken() {
+		return firebaseToken;
+	}
+
+	public void setFirebaseToken(String firebaseToken) {
+		this.firebaseToken = firebaseToken;
 	}
 }

@@ -64,7 +64,7 @@ public class MessageGroupService {
 	
 	@PostMapping("/message")
 	@ResponseBody
-	public MessageGroupResponse createMessageGroup(boolean direct, @RequestParam(required = false) String name, @RequestParam List<Long> memberIds, @RequestParam String sessionToken) throws SessionNotFoundException, ResourceNotFoundException, SessionExpiredException {
+	public MessageGroupResponse createMessageGroup(boolean direct, @RequestParam(required = false) String name, @RequestParam List<Long> memberIds, @RequestParam String sessionToken, @RequestParam long appointmentId) throws SessionNotFoundException, ResourceNotFoundException, SessionExpiredException {
 		
 		Optional<Session> optionalSession = sessionRepo.findByToken(sessionToken);
 		
@@ -80,6 +80,10 @@ public class MessageGroupService {
 		messageGroup.setDirect(direct);
 		messageGroup.setName(name);
 		
+		System.out.println("Appointment ID: " + appointmentId);
+		
+		messageGroup.setAppointmentId(appointmentId);
+		
 		messageGroup = groupRepo.save(messageGroup);
 		
 		for(Long memberId : memberIds) {
@@ -91,6 +95,8 @@ public class MessageGroupService {
 		
 		return getMessageGroup(messageGroup.getMessageGroupId());
 	}
+	
+	
 	
 	@GetMapping("/message/{messageGroupId}")
 	@ResponseBody
@@ -172,8 +178,6 @@ public class MessageGroupService {
 		
 		MessageGroup group = optionalGroup.get();
 		
-		if(group.isDirect()) throw new ForbiddenException();
-		
 		Optional<MessageGroupMember> optionalMember = groupMemberRepo.findByUserIdAndMessageGroupMessageGroupId(memberId, messageGroupId);
 		
 		if(optionalMember.isPresent()) {
@@ -229,4 +233,18 @@ public class MessageGroupService {
 		doc.put("roles", roles);
 		return doc;
 	}
+	
+	@GetMapping("/message/for/{appointmentId}")
+	@ResponseBody
+	public MessageGroupResponse getMessageGroupForAppointment(@PathVariable long appointmentId) throws ResourceNotFoundException {
+		Optional<MessageGroup> optionalGroup = groupRepo.findByAppointmentId(appointmentId);
+		
+		if(!optionalGroup.isPresent()) {
+			throw new ResourceNotFoundException();
+		}
+		
+		return new MessageGroupResponse(optionalGroup.get());
+	}
+	
+	
 }

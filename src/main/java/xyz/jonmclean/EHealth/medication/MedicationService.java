@@ -46,7 +46,7 @@ public class MedicationService {
 		return medications;
 	}
 	
-	@GetMapping("/medication/{id}")
+	@GetMapping("/medication/{medicationId}")
 	@ResponseBody
 	public Medication get(@PathVariable long medicationId) throws MedicationNotFoundException {
 		Optional<Medication> optional = medicationRepo.findById(medicationId);

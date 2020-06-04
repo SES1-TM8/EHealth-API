@@ -194,4 +194,35 @@ public class UrgentCaseService {
 		return imageService.getImage(internal.getImageId());
 	}
 	
+	@GetMapping("/urgent/all/s/{token}")
+	@ResponseBody
+	public List<UrgentCase> findAll(@PathVariable String token) throws SessionNotFoundException, SessionExpiredException, NotPatientException {
+		Optional<Session> optionalSession = sessionRepo.findByToken(token);
+		
+		if(!optionalSession.isPresent()) {
+			throw new SessionNotFoundException();
+		}
+		
+		Session session = optionalSession.get();
+		
+		if(session.expiry.before(new Timestamp(System.currentTimeMillis()))) {
+			throw new SessionExpiredException();
+		}
+		
+		Optional<Patient> optionalPatient = patientRepo.findByUserId(session.getUserId());
+		
+		if(!optionalPatient.isPresent()) throw new NotPatientException();
+		
+		Patient patient = optionalPatient.get();
+		
+		Iterable<UrgentCase> iterableCases = urgentRepo.findAllByPatientId(patient.getPatientId());
+		List<UrgentCase> cases = new ArrayList<>();
+		
+		for(UrgentCase u : iterableCases) {
+			cases.add(u);
+		}
+		
+		return cases;
+	}
+	
 }

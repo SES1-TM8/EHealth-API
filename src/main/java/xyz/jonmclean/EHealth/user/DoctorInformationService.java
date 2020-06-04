@@ -1,5 +1,7 @@
 package xyz.jonmclean.EHealth.user;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +64,33 @@ public class DoctorInformationService {
 		}
 		
 		return optionalDoctor.get();
+	}
+	
+	@GetMapping("/user/doctor/id/{doctorId}")
+	@ResponseBody
+	public Doctor getFromId(@PathVariable long doctorId) throws DoctorInfoNotFoundException {
+		Optional<Doctor> optionalDoctor = doctorRepo.findById(doctorId);
+		
+		if(!optionalDoctor.isPresent()) {
+			throw new DoctorInfoNotFoundException();
+		}
+		
+		return optionalDoctor.get();
+	}
+	
+	@GetMapping("/user/doctor/all")
+	@ResponseBody
+	public List<Doctor> getAll() {
+		Iterable<Doctor> iterableDoctors = doctorRepo.findAll();
+		List<Doctor> doctors = new ArrayList<>();
+		
+		System.out.println("Doctors " + doctors.size());
+		
+		for(Doctor doctor : iterableDoctors) {
+			doctors.add(doctor);
+		}
+		
+		return doctors;
 	}
 	
 }

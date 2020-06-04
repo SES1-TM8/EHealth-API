@@ -1,10 +1,14 @@
 package xyz.jonmclean.EHealth.medication;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -54,7 +58,7 @@ public class PrescriptionService {
 		
 		Session session = optionalSession.get();
 		
-		if(session.expiry.after(new Timestamp(System.currentTimeMillis()))) {
+		if(session.expiry.before(new Timestamp(System.currentTimeMillis()))) {
 			throw new SessionExpiredException();
 		}
 		
@@ -89,6 +93,59 @@ public class PrescriptionService {
 		prescriptionRepo.save(prescription);
 		
 		return prescription;
+	}
+	
+	@GetMapping("/prescription/all/s/{token}")
+	@ResponseBody
+	public List<Prescription> getAll(@PathVariable String token) throws SessionNotFoundException, SessionExpiredException, PatientNotFoundException {
+		Optional<Session> optionalSession = sessionRepo.findByToken(token);
+		
+		if(!optionalSession.isPresent()) {
+			throw new SessionNotFoundException();
+		}
+		
+		Session session = optionalSession.get();
+		
+		if(session.expiry.before(new Timestamp(System.currentTimeMillis()))) {
+			throw new SessionExpiredException();
+		}
+		
+		Optional<Patient> optionalPatient = patientRepo.findByUserId(session.getUserId());
+		
+		if(!optionalPatient.isPresent()) {
+			System.out.println("Not found patient");
+			throw new PatientNotFoundException();
+		}
+		
+		Iterable<Prescription> iterablePrescription = prescriptionRepo.findAllByPatientId(optionalPatient.get().getPatientId());
+		List<Prescription> prescriptions = new ArrayList<>();
+		
+		
+		for(Prescription p : iterablePrescription) {
+			prescriptions.add(p);
+		}
+		
+		return prescriptions;
+	}
+	
+	@GetMapping("/prescription/all/p/{patientId}")
+	@ResponseBody
+	public List<Prescription> getPatientPrescriptions(@PathVariable long patientId) throws PatientNotFoundException {
+		Optional<Patient> optionalPatient = patientRepo.findById(patientId);
+		
+		if(!optionalPatient.isPresent()) {
+			throw new PatientNotFoundException();
+		}
+		
+		Iterable<Prescription> iterablePrescription = prescriptionRepo.findAllByPatientId(optionalPatient.get().getPatientId());
+		List<Prescription> prescriptions = new ArrayList<>();
+		
+		
+		for(Prescription p : iterablePrescription) {
+			prescriptions.add(p);
+		}
+		
+		return prescriptions;
 	}
 	
 }

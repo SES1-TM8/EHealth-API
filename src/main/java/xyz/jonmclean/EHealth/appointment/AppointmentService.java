@@ -21,6 +21,7 @@ import xyz.jonmclean.EHealth.models.Doctor;
 import xyz.jonmclean.EHealth.models.Patient;
 import xyz.jonmclean.EHealth.models.Session;
 import xyz.jonmclean.EHealth.models.exceptions.AppointmentNotFoundException;
+import xyz.jonmclean.EHealth.models.exceptions.DoctorInfoNotFoundException;
 import xyz.jonmclean.EHealth.models.exceptions.NotDoctorException;
 import xyz.jonmclean.EHealth.models.exceptions.SessionExpiredException;
 import xyz.jonmclean.EHealth.models.exceptions.SessionNotFoundException;
@@ -85,7 +86,7 @@ public class AppointmentService {
 		Appointment appointment = new Appointment();
 		appointment.setDoctorId(doctor.getDoctorId());
 		appointment.setPatientId(patient.getPatientId());
-		appointment.setStart(new Date(startTimestamp));
+		appointment.setStart(startTimestamp);
 		
 		appointmentRepo.save(appointment);
 		
@@ -127,7 +128,7 @@ public class AppointmentService {
 		Appointment appointment = new Appointment();
 		appointment.setDoctorId(doctor.getDoctorId());
 		appointment.setPatientId(patient.getPatientId());
-		appointment.setStart(new Date(startTimestamp));
+		appointment.setStart(startTimestamp);
 		
 		appointmentRepo.save(appointment);
 		
@@ -146,7 +147,7 @@ public class AppointmentService {
 		
 		Session session = optionalSession.get();
 		
-		if(session.getExpiry().after(new Timestamp(System.currentTimeMillis()))) {
+		if(session.getExpiry().before(new Timestamp(System.currentTimeMillis()))) {
 			throw new SessionExpiredException();
 		}
 		
@@ -165,12 +166,81 @@ public class AppointmentService {
 		List<Appointment> filtered = new ArrayList<Appointment>();
 		
 		for(Appointment appointment : unfilteredAppointments) {
-			if(appointment.getStart().toString().equalsIgnoreCase(new Date(timestamp).toString())) {
+			if((new Date(appointment.getStart())).toString().equalsIgnoreCase(new Date(timestamp).toString())) {
 				filtered.add(appointment);
 			}
 		}
 		
 		return filtered;
+	}
+	
+	@GetMapping("/appointment/find/doctor/{sessionToken}/{timestamp}")
+	@ResponseBody
+	public List<Appointment> getDoctorAppointmentsForDay(@PathVariable("sessionToken") String sessionToken, @PathVariable("timestamp") long timestamp) 
+			throws SessionNotFoundException, PatientNotFoundException, SessionExpiredException, DoctorInfoNotFoundException {
+		Optional<Session> optionalSession = sessionRepo.findByToken(sessionToken);
+		
+		if(!optionalSession.isPresent()) {
+			throw new SessionNotFoundException();
+		}
+		
+		Session session = optionalSession.get();
+		
+		if(session.getExpiry().before(new Timestamp(System.currentTimeMillis()))) {
+			throw new SessionExpiredException();
+		}
+		
+		Optional<Doctor> optionalDoctor = doctorRepo.findByUserId(session.getUserId());
+		
+		if(!optionalDoctor.isPresent()) {
+			throw new DoctorInfoNotFoundException();
+		}
+		
+		Doctor doctor = optionalDoctor.get();
+		
+		Iterable<Appointment> iterableAppointments = appointmentRepo.findAllByDoctorId(doctor.getDoctorId());
+		List<Appointment> unfilteredAppointments = new ArrayList<Appointment>();
+		iterableAppointments.forEach(unfilteredAppointments::add);
+		
+		List<Appointment> filtered = new ArrayList<Appointment>();
+		
+		for(Appointment appointment : unfilteredAppointments) {
+			if((new Date(appointment.getStart())).toString().equalsIgnoreCase(new Date(timestamp).toString())) {
+				filtered.add(appointment);
+			}
+		}
+		
+		return filtered;
+	}
+	
+	@GetMapping("/appointment/find/patient/{token}")
+	@ResponseBody
+	public List<Appointment> getAppointmentsForPatient(@PathVariable("token") String sessionToken) throws SessionNotFoundException, SessionExpiredException, PatientNotFoundException {
+		Optional<Session> optionalSession = sessionRepo.findByToken(sessionToken);
+		
+		if(!optionalSession.isPresent()) {
+			throw new SessionNotFoundException();
+		}
+		
+		Session session = optionalSession.get();
+		
+		if(session.getExpiry().before(new Timestamp(System.currentTimeMillis()))) {
+			throw new SessionExpiredException();
+		}
+		
+		Optional<Patient> optionalPatient = patientRepo.findByUserId(session.getUserId());
+		
+		if(!optionalPatient.isPresent()) {
+			throw new PatientNotFoundException();
+		}
+		
+		Patient patient = optionalPatient.get();
+		
+		Iterable<Appointment> iterableAppointments = appointmentRepo.findAllByPatientId(patient.getPatientId());
+		List<Appointment> unfilteredAppointments = new ArrayList<Appointment>();
+		iterableAppointments.forEach(unfilteredAppointments::add);
+		
+		return unfilteredAppointments;
 	}
 	
 	@GetMapping("/appointment/find/universal/{sessionToken}/{id}")
@@ -233,6 +303,19 @@ public class AppointmentService {
 		appointmentRepo.delete(appointment);
 		
 		return new GenericResponse(true, "");
+	}
+	
+	@GetMapping("/appointment/all/doctor/{doctorId}")
+	@ResponseBody
+	public List<Appointment> findAppointmentsForDoctor(@PathVariable long doctorId) {
+		Iterable<Appointment> iterable = appointmentRepo.findAllByDoctorId(doctorId);
+		List<Appointment> appointment = new ArrayList<>();
+		
+		for(Appointment app : iterable) {
+			appointment.add(app);
+		}
+		
+		return appointment;
 	}
 	
 }

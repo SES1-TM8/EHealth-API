@@ -13,3 +13,14 @@ EHEALTH_DATABASE_URI | This the url for the database (defaults to ```localhost:3
 googleApiSecretProperty | The JSON file content provided by Google Firebase (contains the secret key for Google Firestore)
 
 Before running you must have an already running DB instance that contains a database named ```ehealth```.
+
+## Authors
+Jon McLean - Lead Developer
+
+Shane Rodrigues - Developer
+
+Joy Liu - Developer
+
+Sally Wang - Developer
+
+Ahmed Kursheed - Developer

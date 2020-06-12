@@ -2,7 +2,7 @@
 This github repository contains the code the EHealth API written for the SES1A subject at the University of Technology Sydney. 
 
 ## Installation
-To instal this project you must clone this repository. Once doing so you must then import into Eclipse Enterprise Edition as an "Existing Maven Project". Then you must run the project using the ```spring-boot:run``` goal. Additionally you must add environment parameters for Google Firestore and Amazon S3. These parameters are defined in the table below
+To install this project you must clone this repository. Following this you must then import it into Eclipse Enterprise Edition as an "Existing Maven Project". Then you must run the project using the ```spring-boot:run``` goal. Additionally you must add environment parameters for Google Firestore and Amazon S3. These parameters are defined in the table below
 
 Parameter Name | Content
 -------------- | -------
